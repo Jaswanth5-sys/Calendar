@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Login & Calendar</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: white;
+        padding: 25px;
+        width: 350px;
+        border-radius: 15px;
+        box-shadow: 0 0 12px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    input {
+        width: 90%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid gray;
+        margin-bottom: 20px;
+    }
+
+    button {
+        width: 95%;
+        padding: 10px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background-color: #2575fc;
+        color: white;
+    }
+
+    button:hover {
+        background-color: #0d47a1;
+    }
+
+    /* Calendar Styling */
+    .calendar {
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #2575fc;
+        color: white;
+        padding: 8px;
+    }
+
+    td {
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .highlight {
+        background: #6a11cb;
+        color: white;
+        font-weight: bold;
+        border-radius: 6px;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container" id="loginPage">
+    <h2>Login With Your Date of Birth</h2>
+    <input type="date" id="dob">
+    <button onclick="login()">Login</button>
+</div>
+
+<div class="container" id="calendarPage" style="display:none;">
+    <h2>Your Birthday Calendar</h2>
+    <p id="birthdayInfo" style="font-weight:bold; color:#2575fc;"></p>
+
+    <div class="calendar" id="calendar"></div>
+</div>
+
+<script>
+function login() {
+    let dobInput = document.getElementById("dob").value;
+
+    if (dobInput === "") {
+        alert("Please select your Date of Birth");
+        return;
+    }
+
+    let date = new Date(dobInput);
+    let bDay = date.getDate();
+    let bMonth = date.getMonth(); // 0–11
+    let dayName = date.toLocaleString('en-us', { weekday: 'long' });
+
+    document.getElementById("birthdayInfo").innerHTML =
+        "Your Birthday: " + dobInput + "<br>Day: " + dayName;
+
+    generateCalendar(bMonth, bDay);
+
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("calendarPage").style.display = "block";
+}
+
+function generateCalendar(month, birthday) {
+    let year = new Date().getFullYear();
+    let firstDay = new Date(year, month, 1).getDay();
+    let daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    let table = "<table><tr>";
+    let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    for (let d of days) table += "<th>" + d + "</th>";
+    table += "</tr><tr>";
+
+    for (let i = 0; i < firstDay; i++) table += "<td></td>";
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        if ((firstDay + day - 1) % 7 === 0) table += "</tr><tr>";
+
+        if (day === birthday)
+            table += "<td class='highlight'>" + day + "</td>";
+        else
+            table += "<td>" + day + "</td>";
+    }
+
+    table += "</tr></table>";
+
+    document.getElementById("calendar").innerHTML = table;
+}
+</script>
+
+</body>
+</html>
