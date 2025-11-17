@@ -55,7 +55,6 @@
         background-color: #0d47a1;
     }
 
-    /* Calendar Styling */
     .calendar {
         margin-top: 20px;
     }
@@ -82,6 +81,30 @@
         font-weight: bold;
         border-radius: 6px;
     }
+
+    .infoText {
+        margin-top: 10px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .wishText {
+        color: #ff007f;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    /* Back Button */
+    #backBtn {
+        margin-top: 20px;
+        background-color: #444;
+    }
+
+    #backBtn:hover {
+        background-color: #000;
+    }
 </style>
 
 </head>
@@ -95,9 +118,18 @@
 
 <div class="container" id="calendarPage" style="display:none;">
     <h2>Your Birthday Calendar</h2>
+
     <p id="birthdayInfo" style="font-weight:bold; color:#2575fc;"></p>
 
+    <p id="ageResult" class="infoText"></p>
+    <p id="daysSurvived" class="infoText"></p>
+    <p id="liveTimer" class="infoText"></p>
+    <p id="wish" class="wishText"></p>
+
     <div class="calendar" id="calendar"></div>
+
+    <!-- BACK BUTTON ADDED -->
+    <button id="backBtn" onclick="goBack()">Back</button>
 </div>
 
 <script>
@@ -109,18 +141,76 @@ function login() {
         return;
     }
 
-    let date = new Date(dobInput);
-    let bDay = date.getDate();
-    let bMonth = date.getMonth(); // 0–11
-    let dayName = date.toLocaleString('en-us', { weekday: 'long' });
+    let dob = new Date(dobInput);
+    let bDay = dob.getDate();
+    let bMonth = dob.getMonth();
+    let dayName = dob.toLocaleString('en-us', { weekday: 'long' });
 
     document.getElementById("birthdayInfo").innerHTML =
         "Your Birthday: " + dobInput + "<br>Day: " + dayName;
 
     generateCalendar(bMonth, bDay);
 
+    showAge(dob);
+    showDaysSurvived(dob);
+    startLiveTimer(dob);
+    birthdayWish(dob);
+
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("calendarPage").style.display = "block";
+}
+
+function showAge(dob) {
+    let today = new Date();
+
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
+    let days = today.getDate() - dob.getDate();
+
+    if (days < 0) {
+        months--;
+        days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+    }
+
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
+
+    document.getElementById("ageResult").innerHTML =
+        "Your Age: " + years + " Years " + months + " Months " + days + " Days";
+}
+
+function showDaysSurvived(dob) {
+    let now = new Date();
+    let diff = now - dob;
+
+    let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    document.getElementById("daysSurvived").innerHTML =
+        "You Survived: " + days + " Days";
+}
+
+function startLiveTimer(dob) {
+    setInterval(() => {
+        let now = new Date();
+        let diff = now - dob;
+
+        let hours = Math.floor(diff / (1000 * 60 * 60));
+        let minutes = Math.floor(diff / (1000 * 60)) % 60;
+        let seconds = Math.floor(diff / 1000) % 60;
+
+        document.getElementById("liveTimer").innerHTML =
+            "Live Time: " + hours + "h : " + minutes + "m : " + seconds + "s";
+    }, 1000);
+}
+
+function birthdayWish(dob) {
+    let today = new Date();
+    if (today.getDate() === dob.getDate() && today.getMonth() === dob.getMonth()) {
+        document.getElementById("wish").innerHTML =
+            "🎉 Happiest Birthday to You 🎉";
+    }
 }
 
 function generateCalendar(month, birthday) {
@@ -149,6 +239,13 @@ function generateCalendar(month, birthday) {
 
     document.getElementById("calendar").innerHTML = table;
 }
+
+/* BACK BUTTON FUNCTION */
+function goBack() {
+    document.getElementById("calendarPage").style.display = "none";
+    document.getElementById("loginPage").style.display = "block";
+}
+
 </script>
 
 </body>
